@@ -30,3 +30,12 @@ The string being hashed is:
 The resulting SHA-256 hash is:
 
     f6405ee04f91591f32f7fc78f52c7b2375822c62154a3ef53d4a6264d72185b9
+
+## Hash Chain Limitation
+
+A plain hash chain detects modification, deletion of middle entries,
+and reordering of entries. However, it cannot detect deletion of the
+newest entries at the end of the log because no later entry exists
+to reference them.
+
+Signed checkpoints can help detect this type of truncation.
