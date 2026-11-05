@@ -1,0 +1,18 @@
+{
+  "id": 2,
+  "title": "Reverse text",
+  "limits": {
+    "cpu_ms": 2000,
+    "wall_ms": 5000,
+    "memory_mb": 256,
+    "processes": 8,
+    "output_kb": 1024
+  },
+  "tests": [
+    {"id": "t1", "stdin": "hello\n", "expected_stdout": "olleh\n", "hidden": false},
+    {"id": "t2", "stdin": "hello world\n", "expected_stdout": "dlrow olleh\n", "hidden": true},
+    {"id": "t3", "stdin": "a\n", "expected_stdout": "a\n", "hidden": true},
+    {"id": "t4", "stdin": "\n", "expected_stdout": "\n", "hidden": true},
+    {"id": "t5", "stdin": "12345\n", "expected_stdout": "54321\n", "hidden": true}
+  ]
+}
