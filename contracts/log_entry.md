@@ -31,11 +31,24 @@ The resulting SHA-256 hash is:
 
     f6405ee04f91591f32f7fc78f52c7b2375822c62154a3ef53d4a6264d72185b9
 
-## Hash Chain Limitation
+## Functions (agreed with Hanson)
 
-A plain hash chain detects modification, deletion of middle entries,
-and reordering of entries. However, it cannot detect deletion of the
-newest entries at the end of the log because no later entry exists
-to reference them.
+- `log.chain.append_entry(payload, session=None)` adds one line to the
+  `log_entries` table and returns it. `payload` is a dictionary, for example
+  `{"submission_id": 42, "verdict": "accepted", "time": "2026-11-12T10:00:00"}`.
+  The worker calls it once after saving each verdict. Without `session`, it
+  opens one with `app.db.SessionLocal`.
+- `log.verify.verify_database(session=None)` reads all rows ordered by `seq`
+  and returns `{"ok": true, "first_bad_seq": null}` or
+  `{"ok": false, "first_bad_seq": 2}`. The route `GET /log/verify` returns this
+  dictionary unchanged.
 
-Signed checkpoints can help detect this type of truncation.
+Table columns (same as the context block): `log_entries(seq, payload, prev_hash, hash)`.
+`seq` is the primary key, so two workers can never write the same line number.
+
+## Hash chain limitation
+
+A plain hash chain detects modification, deletion of middle entries and
+reordering. It cannot detect deletion of the newest entries at the end of the
+log. (`tests/test_log_db.py::test_deleting_newest_row_is_NOT_caught` documents
+this on purpose.) Signed checkpoints would fix this in the final project.
