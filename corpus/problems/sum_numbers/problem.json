@@ -1,31 +1,12 @@
 {
   "id": 1,
   "title": "Sum Numbers",
-  "description": "Read an integer n followed by n integers. Print their sum.",
-  "input_format": "The first line contains n. The second line contains n integers.",
-  "output_format": "Print the sum of the n integers.",
-  "visible_tests": [
-    {
-      "input": "3\n1 2 3\n",
-      "expected_output": "6\n"
-    }
-  ],
-  "hidden_tests": [
-    {
-      "input": "1\n5\n",
-      "expected_output": "5\n"
-    },
-    {
-      "input": "0\n\n",
-      "expected_output": "0\n"
-    },
-    {
-      "input": "4\n-1 2 -3 4\n",
-      "expected_output": "2\n"
-    },
-    {
-      "input": "5\n100 200 300 400 500\n",
-      "expected_output": "1500\n"
-    }
+  "limits": {"cpu_ms": 2000, "wall_ms": 5000, "memory_mb": 256, "processes": 8, "output_kb": 1024},
+  "tests": [
+    {"id": "t1", "stdin": "3\n1 2 3\n", "expected_stdout": "6\n", "hidden": false},
+    {"id": "t2", "stdin": "1\n5\n", "expected_stdout": "5\n", "hidden": true},
+    {"id": "t3", "stdin": "0\n\n", "expected_stdout": "0\n", "hidden": true},
+    {"id": "t4", "stdin": "4\n-1 2 -3 4\n", "expected_stdout": "2\n", "hidden": true},
+    {"id": "t5", "stdin": "5\n100 200 300 400 500\n", "expected_stdout": "1500\n", "hidden": true}
   ]
 }

@@ -1,0 +1,14 @@
+/runner/ @sree1603
+/attacks/cpu/ @sree1603
+/attacks/memory/ @sree1603
+/bench/ @sree1603
+/scripts/ @sree1603
+/judge/ @HansonSR17
+/app/ @HansonSR17
+/attacks/process/ @HansonSR17
+/log/ @Thrishadivyaaa
+/triage/ @Thrishadivyaaa
+/corpus/ @Thrishadivyaaa
+/baselines/ @Thrishadivyaaa
+/attacks/network/ @Thrishadivyaaa
+/attacks/files/ @Thrishadivyaaa
