@@ -1,4 +1,3 @@
-cat > README.md << 'EOF'
 # CodeExam Secure
 
 A prototype that runs student code safely during programming exams and grades it with a tamper-evident log.
@@ -18,4 +17,3 @@ A prototype that runs student code safely during programming exams and grades it
 ## Safety rule
 
 The programs in `attacks/` are test attacks for our own lab. Run them only inside your own WSL Ubuntu, never on a shared server.
-EOF

@@ -1,6 +1,7 @@
 # Task 1: the four building blocks (Varshita's notes)
 
-I ran all four experiments in Ubuntu 24.04 on WSL2 (user `sree`, project folder `~/codeexam-secure`, virtual environment active). The commands, what I saw and what each one means for our runner are below.
+I ran all four experiments in Ubuntu (WSL2) on my own computer, inside `~/codeexam-secure`.
+Below is what I typed, what I saw, and what it means for our runner.
 
 ## Experiment 1: limit memory for one command
 
@@ -8,9 +9,16 @@ I ran all four experiments in Ubuntu 24.04 on WSL2 (user `sree`, project folder 
 (ulimit -v 200000; python3 -c "x = bytearray(500*1024*1024)")
 ```
 
-**What I saw:** Python stopped with a `MemoryError` on the line `x = bytearray(500*1024*1024)`.
+**What I saw:**
 
-**What it means:** `ulimit -v 200000` limits the program's address space to about 200 MB (the number is in kilobytes). The program asked for 500 MB, so Linux refused and Python raised `MemoryError`. The limit only works inside the brackets, so it did not change my normal terminal. Our runner uses the same kind of limit (`RLIMIT_AS`, set with Python's `resource` module) to stop memory attacks such as `mem1.py` and `mem3.py`.
+```text
+Traceback (most recent call last):
+  File "<string>", line 1, in <module>
+    x = bytearray(500*1024*1024)
+MemoryError
+```
+
+**What it means:** `ulimit -v 200000` limits the memory a program may use to about 200 MB (the number is in kilobytes). The program asked for 500 MB, so Linux refused and Python raised `MemoryError`. The limit only applies to this one command, because I put it inside `( ... )`. Our runner uses the same idea in Python with `resource.setrlimit(RLIMIT_AS, ...)`, so a student program that asks for too much memory fails instead of freezing the computer.
 
 ## Experiment 2: a private process list and no network
 
@@ -23,10 +31,21 @@ exit
 
 **What I saw:**
 
-- `ps aux` listed only two processes: `bash` with PID 1 and `ps aux` itself with PID 7. The normal machine has many more.
-- `ping -c 1 8.8.8.8` printed `ping: connect: Network is unreachable`.
+```text
+USER   PID  ...  COMMAND
+root     1  ...  bash
+root     7  ...  ps aux
+```
 
-**What it means:** `unshare` gave the new shell its own private view of the machine. `--pid --mount-proc` gave it its own process list, so it cannot see or touch the other programs on my computer. `--net` gave it an empty network, so it cannot reach the internet or other computers. Our runner starts every student program this way. One extra thing I noticed: inside the private view the first program (`bash`) is PID 1. Linux ignores most kill signals for PID 1, so in the runner the student program must run as a child, not as PID 1 (see `docs/known-weaknesses.md`, point 11).
+and then:
+
+```text
+ping: connect: Network is unreachable
+```
+
+**What it means:** inside the new "box" the `bash` I started is process number 1, and `ps aux` shows only two processes (bash and `ps` itself). A normal Ubuntu shows hundreds. So `--pid --mount-proc` gives the program its **own private process list**: it cannot see or kill our other programs. `--net` gives it its **own empty network**, so `ping` fails with "Network is unreachable". Our runner starts every student program like this.
+
+One more thing I learned: because the program is process number 1 inside the box, Linux ignores some kill signals for it. That is why our launcher starts the student program as a child process (see `docs/known-weaknesses.md`).
 
 ## Experiment 3: see what a program asks Linux to do
 
@@ -35,9 +54,23 @@ strace -f -o /tmp/trace.txt python3 -c "print('hi')"
 head -50 /tmp/trace.txt
 ```
 
-**What I saw:** the program printed `hi`, and the first 50 lines of `/tmp/trace.txt` were requests such as `execve` (start the program), `brk` and `mmap` (get memory), `openat` and `read` (open and read library files like `libc.so.6`) and `close`. The first line shows that `python3` started from my project's `.venv`.
+**What I saw:** the program printed `hi`. The first 50 lines of the trace were lines like these:
 
-**What it means:** every request a program makes to Linux is a *system call*, and each has a name. A simple `print` already needs many of them. The seccomp filter in our runner works on these names: it kills a program that uses a forbidden name such as `socket` or `connect`, and allows the rest. `strace` is how I find out which call a normal program needs when the filter kills it by mistake.
+```text
+execve("/home/sree/codeexam-secure/.venv/bin/python3", ["python3", "-c", "print('hi')"], ...) = 0
+brk(NULL)
+mmap(NULL, 8192, PROT_READ|PROT_WRITE, ...)
+openat(AT_FDCWD, "/etc/ld.so.cache", O_RDONLY|O_CLOEXEC) = 3
+openat(AT_FDCWD, "/usr/lib/x86_64-linux-gnu/libm.so.6", ...) = 3
+openat(AT_FDCWD, "/usr/lib/x86_64-linux-gnu/libz.so.1", ...) = 3
+openat(AT_FDCWD, "/usr/lib/x86_64-linux-gnu/libexpat.so.1", ...) = 3
+openat(AT_FDCWD, "/usr/lib/x86_64-linux-gnu/libc.so.6", ...) = 3
+read(3, ...)   mmap(...)   mprotect(...)   close(3)
+```
+
+**What it means:** even a one-line Python program makes many requests to Linux. Each request has a name, called a **system call** (`execve` starts a program, `openat` opens a file, `mmap` and `brk` get memory, `read` reads a file). The first 50 lines are only the program starting up and loading libraries. This also shows that `python3` here comes from our `.venv`.
+
+The seccomp filter works on these names. Our filter will kill a program that uses a forbidden name such as `socket` or `connect`, and let all the normal names (`openat`, `read`, `write`, `mmap` and so on) through. If a normal program is ever killed by mistake, I can find the name with `strace` and remove it from the blocked list.
 
 ## Experiment 4: are control groups (cgroups) available?
 
@@ -47,8 +80,13 @@ stat -fc %T /sys/fs/cgroup/
 
 **What I saw:** `cgroup2fs`
 
-**What it means:** cgroup version 2 is available on my WSL. Control groups can limit memory for a whole group of processes, which the simple `ulimit`-style limits cannot do. The prototype does not depend on it, so cgroups stay a stretch goal (see the end of `docs/known-weaknesses.md`).
+**What it means:** cgroup version 2 is available on my WSL. Control groups can limit the memory of a whole group of processes, which is stronger than a limit per process. This means the stretch goal (cgroups, Task 8) can be tried on my machine. The prototype does not depend on it: it uses the simpler limits from Experiment 1.
 
-## Answer to share with the team
+## Summary for the team
 
-My WSL has cgroup v2 (`cgroup2fs`), the memory limit and the private process list and empty network all worked. The prototype runner will use `unshare`, a limit on memory and CPU, the user `nobody` and a seccomp filter. Cgroups are optional.
+| Building block | Tool | What it gives us |
+|---|---|---|
+| Limits | `ulimit` / `resource.setrlimit` | A program cannot use more memory, CPU time, processes or file size than we allow |
+| Private view | `unshare --pid --fork --mount-proc --net` | A private process list and no network |
+| Filter | seccomp (seen with `strace`) | A program that asks for a forbidden system call is killed |
+| Control groups | cgroup v2 (`cgroup2fs` on my WSL) | Possible stretch goal: one memory limit for a whole group |
