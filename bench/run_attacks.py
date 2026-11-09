@@ -73,20 +73,22 @@ def run_naive(attack):
     from baselines.naive import run_naive as naive  # Trisha's file
     command = ["python3", attack["path"]] if attack["path"].endswith(".py") \
         else [build_binary(attack)]
-    return naive(command, "", timeout_s=ATTACK_TIMEOUT_S)["stdout"]
+    r = naive(command, "", timeout_s=ATTACK_TIMEOUT_S)
+    return r["stdout"], "exit=%s%s" % (r["exit_code"], " TIMEOUT" if r.get("timed_out") else "")
 
 
 def run_docker(attack):
     if attack["path"].endswith(".py"):
         from baselines.docker_runner import run_docker as docker  # Trisha's file
         folder, name = os.path.split(attack["path"])
-        return docker(folder, name, timeout_s=ATTACK_TIMEOUT_S)["stdout"]
+        r = docker(folder, name, timeout_s=ATTACK_TIMEOUT_S)
+        return r["stdout"], "exit=%s" % r["exit_code"]
     binary = build_binary(attack)  # C++: same Docker settings, but run the binary
     folder, name = os.path.split(binary)
     done = subprocess.run(["docker", "run", "--rm", "--memory=256m", "-v", "%s:/work:ro" % folder,
                            "python:3.12-slim", "/work/" + name],
                           capture_output=True, text=True, timeout=ATTACK_TIMEOUT_S)
-    return done.stdout
+    return done.stdout, "exit=%s" % done.returncode
 
 
 def run_ours(attack):
@@ -111,7 +113,8 @@ def run_ours(attack):
         response = json.loads(done.stdout)
         if not response["compile"]["ok"]:
             raise RuntimeError("compile failed: " + response["compile"]["message"][:200])
-        return response["results"][0]["stdout"]
+        result = response["results"][0]
+        return result["stdout"], "exit=%s violation=%s" % (result["exit_code"], result["violation"])
     finally:
         os.remove(request_path)
 
@@ -120,6 +123,18 @@ RUNNER_FUNCTIONS = {"naive": run_naive, "docker": run_docker, "ours": run_ours}
 
 
 # ---------------------------------------------------------------- helpers
+def available_mb():
+    """Free memory the system can still give out (from /proc/meminfo)."""
+    try:
+        with open("/proc/meminfo") as f:
+            for line in f:
+                if line.startswith("MemAvailable:"):
+                    return int(line.split()[1]) // 1024
+    except OSError:
+        pass
+    return -1
+
+
 def make_canary():
     script = os.path.join(REPO, "scripts", "make_canary.sh")
     if os.path.exists(script):
@@ -160,7 +175,7 @@ def control_check(runner):
     with open(path, "w") as f:
         f.write('print("CONTROL_OK")\n')
     try:
-        output = RUNNER_FUNCTIONS[runner]({"name": "control.py", "category": "control", "path": path})
+        output, _note = RUNNER_FUNCTIONS[runner]({"name": "control.py", "category": "control", "path": path})
     except Exception as error:  # noqa: BLE001
         return str(error).splitlines()[0][:100] if str(error) else "runner raised an error"
     return None if "CONTROL_OK" in (output or "") else "a harmless program printed nothing"
@@ -178,16 +193,20 @@ def run_matrix(attacks, runners, broken):
                 continue
             make_canary()  # a fresh canary before every run
             listener = start_listener() if attack["category"] == "network" else None
+            note = ""
+            memory_before = available_mb()
             try:
-                output = RUNNER_FUNCTIONS[runner](attack)
+                output, note = RUNNER_FUNCTIONS[runner](attack)
                 row[runner] = "NOT_CONTAINED" if MARKER in (output or "") else "CONTAINED"
             except subprocess.TimeoutExpired:
                 row[runner] = "CONTAINED"  # it never finished, so it never printed the marker
+                note = "TIMEOUT"
             except Exception as error:  # noqa: BLE001
                 row[runner] = "ERROR: %s" % str(error).splitlines()[0][:80] if str(error) else "ERROR"
             finally:
                 stop_listener(listener)
-            print("  %-8s %-14s %s" % (runner, attack["name"], row[runner]), flush=True)
+            print("  %-8s %-14s %-14s %s  free_before=%dMB" % (
+                runner, attack["name"], short(row[runner]), note, memory_before), flush=True)
         results[attack["name"]] = row
     return results
 
