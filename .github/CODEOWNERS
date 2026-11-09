@@ -1,4 +1,3 @@
-cat > .github/CODEOWNERS << 'EOF'
 /runner/ @sree1603
 /attacks/cpu/ @sree1603
 /attacks/memory/ @sree1603
@@ -13,4 +12,3 @@ cat > .github/CODEOWNERS << 'EOF'
 /baselines/ @Thrishadivyaaa
 /attacks/network/ @Thrishadivyaaa
 /attacks/files/ @Thrishadivyaaa
-EOF
