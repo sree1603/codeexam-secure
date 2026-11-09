@@ -47,6 +47,18 @@ def normalize_tokens(source):
     return normalized
 
 
+def safe_tokens(source):
+    """Like normalize_tokens, but returns [] when the code cannot be tokenized.
+
+    Students may submit broken code (an unclosed bracket, bad indentation).
+    One broken submission must not crash the whole similarity report.
+    """
+    try:
+        return normalize_tokens(source)
+    except (tokenize.TokenError, IndentationError, SyntaxError):
+        return []
+
+
 def ngrams(tokens, n=5):
     """Return a set of consecutive n-token groups."""
     if n <= 0:
