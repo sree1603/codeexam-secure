@@ -29,9 +29,9 @@
       const data = await response.json();
       if (!response.ok || !data.token) throw new Error('Incorrect username or password. Please try again.');
       sessionStorage.setItem('codeexam_token', data.token);
-      sessionStorage.setItem('codeexam_role', role);
+      sessionStorage.setItem('codeexam_role', data.role);
       // Role authorization is still enforced on the API; this selector only chooses the destination.
-      window.location.assign(role === 'faculty' ? '/ui/similarity/1' : '/ui/problem/1');
+      window.location.assign(data.role === 'faculty' ? '/ui/similarity/1' : '/ui/problem/1');
     } catch (e) {
       error.textContent = e.message || 'Unable to sign in. Check your connection.';
       submit.disabled = false; submit.textContent = 'Sign in →';

@@ -50,7 +50,7 @@ def login(payload: LoginRequest, session: Session = Depends(get_db)):
     user = session.scalar(select(User).where(User.username == payload.username))
     if not user or not verify_password(payload.password, user.password_hash):
         raise HTTPException(status_code=401, detail="Invalid username or password")
-    return {"token": issue_token(user)}
+    return {"token": issue_token(user), "role": user.role}
 
 
 def deadline_passed() -> bool:

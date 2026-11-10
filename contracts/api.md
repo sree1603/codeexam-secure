@@ -12,7 +12,8 @@ Request:
 ```
 Response `200`:
 ```json
-{"token":"a-session-specific-random-token"}
+{"token":"a-session-specific-random-token", "role" : "student"}
+`role` is `student` or `faculty`; the UI uses it to choose the landing page and which links to show.
 ```
 A wrong password gives `401`. Tokens are stored in memory and disappear when the server restarts.
 

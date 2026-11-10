@@ -4,6 +4,8 @@
   let theme;
   try { theme = localStorage.getItem('codeexam_theme') || 'dark'; } catch (_) { theme = 'dark'; }
   root.dataset.theme = theme === 'light' ? 'light' : 'dark';
+  if (sessionStorage.getItem('codeexam_role') !== 'faculty')
+    document.querySelectorAll('[data-nav="faculty"]').forEach(a => a.remove());
   document.querySelectorAll('.theme-toggle').forEach(btn => btn.addEventListener('click', () => {
     const next = root.dataset.theme === 'dark' ? 'light' : 'dark';
     root.dataset.theme = next;

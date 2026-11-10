@@ -202,3 +202,9 @@ def test_trisha_log_hook_payload_when_installed(client, submit_as, monkeypatch):
     assert payloads[0]["submission_id"] == submission_id
     assert payloads[0]["verdict"] == "accepted"
     assert payloads[0]["time"].endswith("Z")
+
+def test_login_returns_role(client):
+    student = client.post("/login", json={"username": "student1", "password": "pass1"}).json()
+    faculty = client.post("/login", json={"username": "teacher1", "password": "pass3"}).json()
+    assert student["role"] == "student" and student["token"]
+    assert faculty["role"] == "faculty" and faculty["token"]
