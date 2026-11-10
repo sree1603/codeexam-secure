@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+{% block title %}Submission #{{ submission_id }} · CodeExam Secure{% endblock %}
+{% block page %}
+<main class="page-wrap result-page">
+  <nav class="crumbs" aria-label="Breadcrumb"><a id="back-link" href="/ui/problem/1">Workspace</a><span>›</span><span>Submission</span><span>›</span><span>#{{ submission_id }}</span></nav>
+  <section class="section-intro"><div><div class="eyebrow">SUBMISSION DETAILS</div><h1 class="page-headline">Solution overview <span style="color:var(--muted);font-size:18px">#{{ submission_id }}</span></h1><p class="page-subtitle">Follow your grading progress and review the verdict on your submitted solution.</p></div><a id="back-btn" href="/ui/problem/1" class="btn btn-ghost">← &nbsp;Back to workspace</a></section>
+  <div class="cards-grid" aria-label="Submission metrics">
+    <div class="metric-card primary-card"><span class="metric-label">OVERALL VERDICT</span><div class="metric-value" id="verdict" aria-live="polite">Pending review</div><div class="metric-sub" id="verdict-caption">Waiting for your result</div><div class="status-orbit active" id="status-orbit" aria-hidden="true">⌛</div></div>
+    <div class="metric-card"><span class="metric-label">SUBMISSION STATUS</span><div class="metric-value" id="status" aria-live="polite">Queued</div><div class="metric-sub">Worker processing state</div></div>
+    <div class="metric-card"><span class="metric-label">VISIBLE TESTS</span><div class="metric-value" id="test-count">—</div><div class="metric-sub">Per-test results available to you</div></div>
+  </div>
+  <div class="status-banner" id="result-banner"><span class="banner-icon" aria-hidden="true">⌘</span><div><strong id="banner-title">Your solution is in the grading queue.</strong><br><span id="banner-message">This page refreshes automatically while the worker processes your code.</span></div></div>
+  <div class="progress-line" id="progress"><span></span></div>
+  <div id="page-alert" class="page-alert" role="alert"></div>
+  <section class="table-card" aria-labelledby="tests-heading">
+    <div class="table-top"><div><h2 id="tests-heading">Test case breakdown</h2><p>Private test case details are never shown to students.</p></div><span class="badge" id="test-badge">LIVE STATUS</span></div>
+    <div class="table-scroll"><table class="data-table"><thead><tr><th>Test</th><th>Outcome</th><th>Visibility</th></tr></thead><tbody id="tests"><tr><td colspan="3" class="empty-row">Waiting for test results…</td></tr></tbody></table></div>
+  </section>
+  <p class="notice-inline">Verdicts are determined by the grading worker. If your result stays queued, confirm that the worker and Varshita's secure runner are running. A missing runner does not mean that your submission has passed.</p>
+</main>
+{% endblock %}
+{% block scripts %}<script>window.CODEEXAM_SUBMISSION_ID = {{ submission_id|tojson }};</script><script defer src="/static/js/submission.js"></script>{% endblock %}
