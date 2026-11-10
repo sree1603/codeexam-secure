@@ -106,6 +106,8 @@ def grade_response(response: dict, tests: list[dict]) -> list[dict]:
     if not isinstance(compile_info.get("ok"), bool):
         raise ValueError("Runner missing compile.ok")
     results = response["results"]
+    if any(entry.get("violation") == "launcher_error" for entry in results):
+        raise RuntimeError("Runner could not start the sandbox (launcher_error)")
     if not compile_info["ok"]:
         # C++ compile errors have no per-test runner result.
         return [{"test_id": t["id"], "verdict": "compile_error",

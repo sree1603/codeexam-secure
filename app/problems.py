@@ -2,6 +2,7 @@
 import json
 from pathlib import Path
 
+from sqlalchemy import select
 from sqlalchemy.orm import Session
 
 from app.db import SessionLocal
@@ -28,19 +29,30 @@ def load_problem(folder: str | Path, session: Session | None = None) -> int:
         problem_id = int(data["id"])
         existing = session.get(Problem, problem_id)
         if existing is None:
-            existing = Problem(id=problem_id, title=str(data["title"]),
-                               limits_json=json.dumps(data["limits"]))
-            session.add(existing)
+            session.add(Problem(id=problem_id, title=str(data["title"]),
+                                limits_json=json.dumps(data["limits"])))
         else:
             existing.title = str(data["title"])
             existing.limits_json = json.dumps(data["limits"])
-            session.query(Test).filter(Test.problem_id == problem_id).delete()
         session.flush()
-        for item in data["tests"]:
-            session.add(Test(id=int(item["id"]), problem_id=problem_id,
-                             stdin=str(item["stdin"]),
-                             expected_stdout=str(item["expected_stdout"]),
-                             hidden=bool(item["hidden"])))
+        # "t1" is only a label (every problem uses it), so the database numbers tests itself.
+        rows = session.scalars(select(Test).where(Test.problem_id == problem_id)
+                               .order_by(Test.id)).all()
+        for position, item in enumerate(data["tests"]):
+            for name in ("stdin", "expected_stdout", "hidden"):
+                if name not in item:
+                    raise ValueError(f"Test {position + 1} is missing '{name}'")
+            if position < len(rows):
+                row = rows[position]
+                row.stdin = str(item["stdin"])
+                row.expected_stdout = str(item["expected_stdout"])
+                row.hidden = bool(item["hidden"])
+            else:
+                session.add(Test(problem_id=problem_id, stdin=str(item["stdin"]),
+                                 expected_stdout=str(item["expected_stdout"]),
+                                 hidden=bool(item["hidden"])))
+        for extra in rows[len(data["tests"]):]:
+            session.delete(extra)
         if own_session:
             session.commit()
         return problem_id

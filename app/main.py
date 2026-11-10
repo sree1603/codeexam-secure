@@ -129,24 +129,21 @@ def read_submission(submission_id: int, user: User = Depends(get_current_user),
 def verify_log(user: User = Depends(get_current_user)):
     require_faculty(user)
     try:
-        from log.verify import verify_log as verifier
+        from log.verify import verify_database
     except ImportError as exc:
-        raise HTTPException(status_code=503, detail="Trisha's log verifier is not installed") from exc
-    # Integrator must agree on the function's actual signature before merging.
-    result = verifier()
-    if not isinstance(result, dict) or "ok" not in result or "first_bad_seq" not in result:
-        raise HTTPException(status_code=503, detail="Log verifier contract not agreed")
+        raise HTTPException(status_code=503, detail="Log verifier is not installed") from exc
+    result = verify_database()
     return {"ok": result["ok"], "first_bad_seq": result["first_bad_seq"]}
 
 
 @app.get("/similarity/{problem_id}")
-def similarity(problem_id: int, user: User = Depends(get_current_user)):
+def similarity(problem_id: int, user: User = Depends(get_current_user),
+               session: Session = Depends(get_db)):
     require_faculty(user)
+    if session.get(Problem, problem_id) is None:
+        raise HTTPException(status_code=404, detail="Problem not found")
     try:
-        from triage.report import get_similarity
+        from triage.report import similarity_for_problem
     except ImportError as exc:
-        raise HTTPException(status_code=503, detail="Trisha's similarity report is not installed") from exc
-    data = get_similarity(problem_id)
-    if not isinstance(data, list):
-        raise HTTPException(status_code=503, detail="Similarity report contract not agreed")
-    return data
+        raise HTTPException(status_code=503, detail="Similarity report is not installed") from exc
+    return similarity_for_problem(problem_id)

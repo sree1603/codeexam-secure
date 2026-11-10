@@ -17,6 +17,8 @@ def decide_test(compile_info: dict, result: dict, expected: str) -> str:
     if not compile_info["ok"]:
         return "compile_error"
     violation = result.get("violation")
+    if violation == "launcher_error":
+        return "internal_error"
     if violation in ("forbidden_call", "network_blocked", "process_limit"):
         return "policy_violation"
     if violation in ("time_limit", "memory_limit", "output_limit"):

@@ -78,8 +78,8 @@ def test_private_results_and_hidden_tests(client, token_for, submit_as):
     assert client.get("/log/verify", headers=auth_header(student)).status_code == 403
     assert client.get("/similarity/1", headers=auth_header(student)).status_code == 403
     # If Trisha hasn't added these modules yet, do NOT make up verification results.
-    assert client.get("/log/verify", headers=auth_header(faculty)).status_code == 503
-    assert client.get("/similarity/1", headers=auth_header(faculty)).status_code == 503
+    assert client.get("/log/verify", headers=auth_header(faculty)).json() == {"ok": True, "first_bad_seq": None}
+    assert client.get("/similarity/1", headers=auth_header(faculty)).status_code == 200
 
 
 def test_two_workers_only_claim_one_submission(client, submit_as):
