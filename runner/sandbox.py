@@ -191,7 +191,10 @@ def run_program(command, stdin_text, limits, workdir, outdir, isolated=None):
 # ---------------------------------------------------------------- compile
 def compile_cpp(workdir):
     """Compile main.cpp as the user nobody. Returns (ok, message)."""
-    setter = make_limit_setter(cpu_s=COMPILE_TIMEOUT_S, mem_mb=2048, procs=64,
+    setter = make_limit_setter(cpu_s=COMPILE_TIMEOUT_S, mem_mb=2048,
+                               # NPROC counts ALL of the user's processes, so only
+                               # apply it when we run as root and drop to 'nobody'.
+                               procs=64 if os.geteuid() == 0 else 0,
                                fsize_kb=65536, nofile=256)
 
     def prepare():
