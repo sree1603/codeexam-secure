@@ -1,0 +1,18 @@
+{
+  "id": 3,
+  "title": "Count primes",
+  "limits": {
+    "cpu_ms": 2000,
+    "wall_ms": 5000,
+    "memory_mb": 256,
+    "processes": 8,
+    "output_kb": 1024
+  },
+  "tests": [
+    {"id": "t1", "stdin": "10\n", "expected_stdout": "4\n", "hidden": false},
+    {"id": "t2", "stdin": "1\n", "expected_stdout": "0\n", "hidden": true},
+    {"id": "t3", "stdin": "2\n", "expected_stdout": "1\n", "hidden": true},
+    {"id": "t4", "stdin": "0\n", "expected_stdout": "0\n", "hidden": true},
+    {"id": "t5", "stdin": "100\n", "expected_stdout": "25\n", "hidden": true}
+  ]
+}

@@ -1,0 +1,14 @@
+1. Writing 3 verdicts to the log...
+   line 1: {"submission_id": 1, "verdict": "accepted"}  hash=e4779cb0026f...
+   line 2: {"submission_id": 2, "verdict": "time_limit"}  hash=c258ced83c81...
+   line 3: {"submission_id": 3, "verdict": "wrong_answer"}  hash=4e584f01656a...
+
+2. Verify the untouched log:
+   {'ok': True, 'first_bad_seq': None}
+
+3. Someone secretly edits line 2 (time_limit -> accepted):
+
+4. Verify again:
+   {'ok': False, 'first_bad_seq': 2}
+
+   The verifier names the broken line: 2

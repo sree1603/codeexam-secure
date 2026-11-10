@@ -1,0 +1,16 @@
+cat > .github/CODEOWNERS << 'EOF'
+/runner/ @LEAD
+/attacks/cpu/ @LEAD
+/attacks/memory/ @LEAD
+/bench/ @LEAD
+/scripts/ @LEAD
+/judge/ @P2
+/app/ @P2
+/attacks/process/ @P2
+/log/ @P3
+/triage/ @P3
+/corpus/ @P3
+/baselines/ @P3
+/attacks/network/ @P3
+/attacks/files/ @P3
+EOF 
