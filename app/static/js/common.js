@@ -1,4 +1,4 @@
-hanson-fixes(() => {
+(() => {
   'use strict';
   const root = document.documentElement;
   let theme;
