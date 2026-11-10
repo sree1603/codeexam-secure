@@ -24,3 +24,4 @@ Each row is one attack program. **CONTAINED** means the attack did not print `AT
 
 Stability: the table was identical in all 3 runs.
 
+TODO (write by hand): one honest paragraph. Say which attacks Docker or our box missed and why. Do not hide a failure.
