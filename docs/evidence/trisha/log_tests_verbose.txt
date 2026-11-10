@@ -1,0 +1,13 @@
+tests/test_chain.py::TestHashChain::test_entries_swapped PASSED          [  8%]
+tests/test_chain.py::TestHashChain::test_five_entries_are_linked PASSED  [ 16%]
+tests/test_chain.py::TestHashChain::test_middle_entry_deleted PASSED     [ 25%]
+tests/test_chain.py::TestHashChain::test_payload_tampering PASSED        [ 33%]
+tests/test_chain.py::TestHashChain::test_valid_chain PASSED              [ 41%]
+tests/test_log_db.py::test_first_entry_uses_genesis PASSED               [ 50%]
+tests/test_log_db.py::test_entries_are_linked PASSED                     [ 58%]
+tests/test_log_db.py::test_empty_log_verifies PASSED                     [ 66%]
+tests/test_log_db.py::test_normal_log_verifies PASSED                    [ 75%]
+tests/test_log_db.py::test_edited_row_is_caught_at_row_2 PASSED          [ 83%]
+tests/test_log_db.py::test_deleted_middle_row_is_caught PASSED           [ 91%]
+tests/test_log_db.py::test_deleting_newest_row_is_NOT_caught PASSED      [100%]
+============================== 12 passed in 0.24s ==============================

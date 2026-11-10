@@ -3,3 +3,6 @@ __pycache__/
 *.pyc
 app.db
 .env
+results/*.csv
+results/build/
+.pytest_cache/

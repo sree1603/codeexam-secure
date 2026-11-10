@@ -1,0 +1,31 @@
+Compared 9 programs (8 honest + 1 planted copy)
+
+SIMILARITY REPORT
+------------------------------------------------------------
+
+Rank: 1
+Program 1: sol01.py
+Program 2: sol11_planted_copy.py
+Similarity: 100.00%
+
+Rank: 2
+Program 1: sol04.py
+Program 2: sol09.py
+Similarity: 65.45%
+
+Rank: 3
+Program 1: sol02.py
+Program 2: sol07.py
+Similarity: 55.56%
+
+Rank: 4
+Program 1: sol02.py
+Program 2: sol05.py
+Similarity: 54.17%
+
+Rank: 5
+Program 1: sol01.py
+Program 2: sol02.py
+Similarity: 53.85%
+
+Note: High similarity is a reason for review, not proof of cheating.
