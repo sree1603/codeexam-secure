@@ -1,0 +1,50 @@
+{% extends "base.html" %}
+{% block title %}Sign in · CodeExam Secure{% endblock %}
+{% block body_class %}login-body{% endblock %}
+{% block body %}
+<section class="login-showcase" aria-label="Platform overview">
+  <div class="showcase-top">
+    <a class="brand" href="/ui/login"><span class="brand-mark" aria-hidden="true"><svg viewBox="0 0 32 32" fill="none"><path d="M16 2.7 28 7.3v8.5c0 7.1-4.2 11.6-12 14.1C8.2 27.4 4 22.9 4 15.8V7.3L16 2.7Z" stroke="currentColor" stroke-width="2"/><path d="m13 12-4 4 4 4m6-8 4 4-4 4" stroke="currentColor" stroke-width="2.25" stroke-linecap="round" stroke-linejoin="round"/></svg></span><span>CodeExam<span class="brand-accent">Secure</span></span></a>
+    <span class="showcase-secure">● &nbsp;SECURE ASSESSMENT</span>
+  </div>
+  <div class="showcase-main">
+    <span class="showcase-kicker">✦ &nbsp; THE NEXT GENERATION OF CODE ASSESSMENT</span>
+    <h1>Think. Code.<br><em>Prove it.</em></h1>
+    <p>A focused coding workspace built for fair, secure university programming exams. Just you, your logic, and the challenge.</p>
+    <div class="code-demo" aria-hidden="true">
+      <div class="code-demo-head"><span class="window-dot"></span><span class="window-dot"></span><span class="window-dot"></span><span class="code-file">solution.py</span><span style="margin-left:auto;color:#81ab9d;font:10px Consolas,monospace">● READY</span></div>
+      <pre><span class="cm"># Every solution starts with a first line</span>
+<span class="kw">def</span> <span class="fn">solve</span>():
+    a, b = <span class="fn">map</span>(int, input().split())
+    answer = a + b
+    <span class="fn">print</span>(answer)
+
+<span class="kw">if</span> __name__ == <span class="str">"__main__"</span>:
+    solve()</pre>
+      <div class="demo-footer"><span>✓</span> All test cases passed <span>Prototype preview</span></div>
+    </div>
+  </div>
+  <div class="showcase-bottom"><span><b>◇</b> Isolated code execution</span><span><b>◎</b> Transparent verdicts</span><span><b>⌘</b> Focused workspace</span></div>
+</section>
+<section class="login-form-side" aria-label="Sign in">
+  <button class="icon-btn theme-toggle" aria-label="Toggle theme" title="Toggle theme" type="button">◐</button>
+  <div class="login-form-inner">
+    <span class="login-overline">WELCOME BACK</span>
+    <h2>Ready to code?</h2>
+    <p class="login-subtitle">Sign in to continue to your assessment workspace.</p>
+    <div class="portal-toggle" role="group" aria-label="Choose portal">
+      <button id="student-portal" class="selected" type="button" aria-pressed="true">Student portal</button>
+      <button id="faculty-portal" type="button" aria-pressed="false">Faculty portal</button>
+    </div>
+    <form id="login-form">
+      <div class="field"><label for="username">Username</label><input class="text-input" id="username" type="text" placeholder="Enter your username" autocomplete="username" required maxlength="100"></div>
+      <div class="field"><label for="password">Password</label><div class="password-field"><input class="text-input" id="password" type="password" placeholder="Enter your password" autocomplete="current-password" required><button class="show-password" id="show-password" type="button" aria-label="Show password">SHOW</button></div></div>
+      <div id="message" class="inline-error" role="alert" aria-live="polite"></div>
+      <button type="submit" id="sign-in" class="btn btn-primary login-btn">Sign in <span aria-hidden="true">→</span></button>
+    </form>
+    <div class="login-hint"><strong>Demo access</strong> · For local prototype testing only<br>Student: <code>student1</code> / <code>student123</code><br>Faculty: <code>teacher1</code> / <code>teacher123</code></div>
+    <p class="login-foot">CodeExam Secure · University prototype · 2026</p>
+  </div>
+</section>
+{% endblock %}
+{% block scripts %}<script defer src="/static/js/login.js"></script>{% endblock %}

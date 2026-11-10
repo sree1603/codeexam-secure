@@ -1,0 +1,56 @@
+{% extends "base.html" %}
+{% block title %}{{ title }} · Workspace · CodeExam Secure{% endblock %}
+{% block page %}
+<main class="workspace" id="workspace">
+  <aside class="workspace-sidebar" aria-label="Problem list">
+    <div class="side-exam-card"><span class="badge green"><span class="dot"></span> ASSESSMENT WORKSPACE</span><strong>Programming challenge</strong><p>Write, submit and review your code in a focused environment.</p></div>
+    <p class="side-label">PROBLEMS</p>
+    {% for p in problems %}<a href="/ui/problem/{{ p.id }}" class="side-link {% if p.id == problem_id %}active{% endif %}" {% if p.id == problem_id %}aria-current="page"{% endif %}><span class="side-index">{{ '%02d'|format(loop.index) }}</span><span>{{ p.title }}</span></a>{% endfor %}
+    <div class="sidebar-bottom"><b>Submission policy</b><br>Only your own submissions and visible-test results are shown. Hidden tests remain private.</div>
+  </aside>
+  <section class="problem-pane" aria-labelledby="problem-heading">
+    <div class="pane-tabs" role="tablist" aria-label="Problem details"><button class="pane-tab active" data-tab="description" role="tab" aria-selected="true" aria-controls="description-panel">Description</button><button class="pane-tab" data-tab="examples" role="tab" aria-selected="false" aria-controls="examples-panel">Test cases <span class="muted">({{ samples|length }})</span></button></div>
+    <div class="pane-content">
+      <div id="description-panel" class="tab-panel" role="tabpanel">
+        <div class="problem-id">CHALLENGE {{ '%02d'|format(problem_id) }} <span>·</span> PROGRAMMING</div>
+        <h1 class="problem-title" id="problem-heading">{{ title }}</h1>
+        <div class="info-badges"><span class="badge green">● &nbsp;Available</span><span class="badge">Python / C++</span><span class="badge">Standard I/O</span></div>
+        <div class="divider"></div>
+        <div class="desc-section"><h3>Problem statement</h3>
+        {% if is_demo_sum %}
+          <p>Given two integers <code>a</code> and <code>b</code>, calculate their sum and print the result.</p>
+          <div class="problem-callout"><p>Read two space-separated integers from standard input, then print exactly one integer: <b>a + b</b>.</p></div>
+          <h3>Input format</h3><p>A single line containing two integers.</p>
+          <h3>Output format</h3><p>Print their sum on a single line.</p>
+        {% else %}
+          <p>The prototype database stores the problem title and tests, but not a complete written statement. Read the faculty-provided statement for this question before submitting.</p>
+          <div class="problem-callout"><p>Use standard input for reading test data and standard output for your answer. Do not print prompts or debugging messages.</p></div>
+        {% endif %}
+        <h3>Execution limits</h3><div class="constraints"><div class="constraint">CPU time<b>{{ limits.cpu_ms }} ms</b></div><div class="constraint">Wall time<b>{{ limits.wall_ms }} ms</b></div><div class="constraint">Memory<b>{{ limits.memory_mb }} MB</b></div></div>
+        {% if samples %}<div class="example-head"><strong>Example 01</strong><button class="badge" type="button" data-show-tab="examples">View all visible tests →</button></div><p class="sample-title">Input</p><div class="sample-block"><pre>{{ samples[0].input }}</pre></div><p class="sample-title">Expected output</p><div class="sample-block"><pre>{{ samples[0].output }}</pre></div>{% endif %}
+        </div>
+      </div>
+      <div id="examples-panel" class="tab-panel" role="tabpanel" hidden>
+        <div class="problem-id">VISIBLE TEST CASES</div><h2 class="problem-title">Test cases</h2>
+        <p class="muted" style="font-size:12px;line-height:1.8">Use these visible cases to understand input and expected output. Additional hidden cases may be used for grading.</p>
+        {% for sample in samples %}
+          <div class="example-head"><strong>Test case {{ '%02d'|format(loop.index) }}</strong><span class="badge green">VISIBLE</span></div>
+          <p class="sample-title">Input</p><div class="sample-block"><button type="button" class="sample-copy" data-copy="test-input-{{ loop.index }}">Copy</button><pre id="test-input-{{ loop.index }}">{{ sample.input }}</pre></div>
+          <p class="sample-title">Expected output</p><div class="sample-block"><button type="button" class="sample-copy" data-copy="test-output-{{ loop.index }}">Copy</button><pre id="test-output-{{ loop.index }}">{{ sample.output }}</pre></div>
+        {% else %}
+          <div class="samples-empty">No visible test cases are available for this problem. The grading runner will use the private tests provided by faculty.</div>
+        {% endfor %}
+      </div>
+    </div>
+  </section>
+  <section class="editor-pane" aria-label="Code editor">
+    <div class="editor-toolbar"><span class="editor-title">Code editor</span><span class="editor-caption">/ Write your solution</span><div class="editor-toolbar-spacer"></div><label class="muted" for="lang" style="font-size:10px">LANGUAGE</label><select id="lang" class="editor-select" aria-label="Programming language"><option value="python">Python 3</option><option value="cpp">C++ 17</option></select><div class="editor-font"><button class="mini-btn" id="font-down" type="button" aria-label="Decrease editor font size">−</button><span id="font-label">13</span><button class="mini-btn" id="font-up" type="button" aria-label="Increase editor font size">+</button></div></div>
+    <div class="editor-tabs"><span class="file-tab"><span id="file-name">solution.py</span><span id="unsaved-dot" class="unsaved-dot">●</span></span></div>
+    <div class="code-editor" id="code-editor"><div class="line-numbers" id="line-numbers" aria-hidden="true">1</div><textarea id="source" class="editor-textarea" spellcheck="false" autocapitalize="off" autocomplete="off" autocorrect="off" wrap="off" aria-label="Source code editor" placeholder="Write your code here..."></textarea></div>
+    <div class="editor-status"><span id="cursor-pos">Ln 1, Col 1</span><span id="save-status">Saved locally</span><span class="status-right">UTF-8 &nbsp;·&nbsp; 4 spaces</span></div>
+    <form id="code-form" class="editor-bottom"><span class="submit-hint">Your code is saved in this browser.<br><kbd>Ctrl</kbd> + <kbd>Enter</kbd> to submit</span><button type="submit" id="submit-btn" class="btn btn-primary"><span>Submit solution</span><span aria-hidden="true">↗</span></button></form>
+    <p id="message" role="alert" aria-live="polite" class="editor-error"></p>
+  </section>
+</main>
+{% endblock %}
+{% block scripts %}<script>window.CODEEXAM_PROBLEM = {id: {{ problem_id|tojson }}, demo: {{ is_demo_sum|tojson }}};</script><script defer src="/static/js/editor.js"></script>{% endblock %}

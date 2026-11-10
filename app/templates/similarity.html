@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+{% block title %}Faculty Integrity Review · CodeExam Secure{% endblock %}
+{% block page %}
+<main class="page-wrap">
+  <nav class="crumbs" aria-label="Breadcrumb"><span>Faculty workspace</span><span>›</span><span>Academic integrity</span><span>›</span><span>Problem {{ problem_id }}</span></nav>
+  <section class="section-intro"><div><div class="eyebrow">FACULTY DASHBOARD</div><h1 class="page-headline">Similarity review</h1><p class="page-subtitle">Review ranked submission pairs for problem <strong>#{{ problem_id }}</strong> with evidence-led, human decisions.</p></div><a href="/ui/problem/{{ problem_id }}" class="btn btn-ghost">View challenge ↗</a></section>
+  <div class="faculty-stats" aria-label="Summary statistics"><div class="faculty-stat"><span class="metric-label">PAIRS RETURNED</span><b id="total-pairs">—</b><small>From the similarity module</small></div><div class="faculty-stat"><span class="metric-label">HIGHEST SIMILARITY</span><b id="max-score">—</b><small>Among returned pairs</small></div><div class="faculty-stat"><span class="metric-label">REPORT STATUS</span><b id="report-status" style="font-size:19px">Loading…</b><small>Faculty-only API</small></div></div>
+  <div class="status-banner warning"><span class="banner-icon" aria-hidden="true">!</span><div><strong>A high score is a reason to look, not proof of copying.</strong><br>Scores are indicators for faculty review, not automatic misconduct decisions. Review the underlying evidence before making any determination.</div></div>
+  <div class="page-alert" id="page-alert" role="alert"></div>
+  <section class="table-card"><div class="table-top"><div><h2>Submission pairs</h2><p>Ranked by the similarity scores supplied by Trisha's module.</p></div><input class="search-input" id="pair-search" type="search" placeholder="Search submission ID…" aria-label="Search submission pairs"></div>
+    <div class="table-scroll"><table class="data-table"><thead><tr><th>#</th><th>Submission A</th><th>Submission B</th><th>Similarity score</th></tr></thead><tbody id="pairs"><tr><td colspan="4" class="empty-row">Loading similarity report…</td></tr></tbody></table></div>
+  </section>
+  <p class="notice-inline">This interface displays scores returned by the API only. Detailed evidence and faculty decision recording require Trisha's triage/review integration. No similarity scores are fabricated for the demo.</p>
+</main>
+{% endblock %}
+{% block scripts %}<script>window.CODEEXAM_SIMILARITY_PROBLEM = {{ problem_id|tojson }};</script><script defer src="/static/js/similarity.js"></script>{% endblock %}

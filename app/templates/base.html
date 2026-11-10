@@ -1,0 +1,39 @@
+<!doctype html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="color-scheme" content="dark light">
+  <meta name="theme-color" content="#0b101b">
+  <title>{% block title %}CodeExam Secure{% endblock %}</title>
+  <link rel="stylesheet" href="/static/css/app.css">
+  {% block head %}{% endblock %}
+</head>
+<body class="{% block body_class %}app-body{% endblock %}">
+  {% block body %}
+  <header class="topbar">
+    <a class="brand" href="/ui/problem/1" aria-label="CodeExam Secure home">
+      <span class="brand-mark" aria-hidden="true">
+        <svg viewBox="0 0 32 32" fill="none"><path d="M16 2.7 28 7.3v8.5c0 7.1-4.2 11.6-12 14.1C8.2 27.4 4 22.9 4 15.8V7.3L16 2.7Z" stroke="currentColor" stroke-width="2"/><path d="m13 12-4 4 4 4m6-8 4 4-4 4" stroke="currentColor" stroke-width="2.25" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </span>
+      <span>CodeExam<span class="brand-accent">Secure</span></span>
+    </a>
+    <span class="topbar-divider" aria-hidden="true"></span>
+    <div class="topbar-context"><span class="context-dot"></span> UNIVERSITY ASSESSMENT <span class="context-hide">/ PROTOTYPE</span></div>
+    <div class="topbar-spacer"></div>
+    <nav class="topbar-links" aria-label="Main navigation">
+      <a href="/ui/problem/1" data-nav="workspace">Workspace</a>
+      <a href="/ui/similarity/1" data-nav="faculty">Faculty review</a>
+    </nav>
+    <button type="button" class="icon-btn theme-toggle" aria-label="Toggle light and dark theme" title="Toggle theme">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2m0 16v2M4.93 4.93l1.42 1.42m11.3 11.3 1.42 1.42M2 12h2m16 0h2M4.93 19.07l1.42-1.42m11.3-11.3 1.42-1.42"/></svg>
+    </button>
+    <button type="button" class="profile-btn" id="logout" aria-label="Log out"><span class="avatar">CE</span><span class="profile-label">Log out</span><span class="logout-arrow">↗</span></button>
+  </header>
+  {% block page %}{% endblock %}
+  {% endblock %}
+  <div id="toast" class="toast" role="status" aria-live="polite"></div>
+  <script defer src="/static/js/common.js"></script>
+  {% block scripts %}{% endblock %}
+</body>
+</html>
