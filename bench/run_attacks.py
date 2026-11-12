@@ -151,8 +151,32 @@ def start_listener():
         return None
     process = subprocess.Popen([sys.executable, path], stdout=subprocess.DEVNULL,
                                stderr=subprocess.DEVNULL, start_new_session=True)
-    time.sleep(0.5)  # give it time to start listening on port 9999
+    # Wait until port 9999 really accepts connections. A fixed sleep was too short on a busy
+    # computer: the attack then found nobody listening and was wrongly counted as CONTAINED.
+    deadline = time.time() + 5
+    while time.time() < deadline:
+        if process.poll() is not None:
+            break
+        if port_is_listening(9999):
+            return process
+        time.sleep(0.05)
+    print("  WARNING: the network listener did not start; network results are not valid", flush=True)
     return process
+
+
+def port_is_listening(port):
+    """True if some program listens on this local TCP port (reads /proc, never connects)."""
+    wanted = ":%04X" % port
+    for table in ("/proc/net/tcp", "/proc/net/tcp6"):
+        try:
+            with open(table) as f:
+                for line in f.readlines()[1:]:
+                    parts = line.split()
+                    if len(parts) > 3 and parts[1].endswith(wanted) and parts[3] == "0A":
+                        return True
+        except OSError:
+            pass
+    return False
 
 
 def stop_listener(process):
