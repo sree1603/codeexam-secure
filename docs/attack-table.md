@@ -10,18 +10,24 @@ Each row is one attack program. **CONTAINED** means the attack did not print `AT
 | mem1.py | memory | NOT_CONTAINED | CONTAINED | CONTAINED |
 | mem2.cpp | memory | NOT_CONTAINED | CONTAINED | CONTAINED |
 | mem3.py | memory | NOT_CONTAINED | CONTAINED | CONTAINED |
+| proc1.py | process | NOT_CONTAINED | NOT_CONTAINED | CONTAINED |
+| proc2.py | process | NOT_CONTAINED | NOT_CONTAINED | CONTAINED |
+| proc3.cpp | process | NOT_CONTAINED | NOT_CONTAINED | CONTAINED |
+| net1.py | network | NOT_CONTAINED | CONTAINED | CONTAINED |
+| net2.cpp | network | NOT_CONTAINED | CONTAINED | CONTAINED |
+| net3.py | network | NOT_CONTAINED | CONTAINED | CONTAINED |
 | file1.py | files | NOT_CONTAINED | CONTAINED | CONTAINED |
 | file2.cpp | files | NOT_CONTAINED | CONTAINED | CONTAINED |
 | file3.py | files | NOT_CONTAINED | CONTAINED | CONTAINED |
 
 ## Reading the table
 
-- **naive** contained 0 of 9 attacks.
-  - not contained: cpu1.py, cpu2.cpp, cpu3.py, mem1.py, mem2.cpp, mem3.py, file1.py, file2.cpp, file3.py
-- **docker** contained 6 of 9 attacks.
-  - not contained: cpu1.py, cpu2.cpp, cpu3.py
-- **ours** contained 9 of 9 attacks.
+- **naive** contained 0 of 15 attacks.
+  - not contained: cpu1.py, cpu2.cpp, cpu3.py, mem1.py, mem2.cpp, mem3.py, proc1.py, proc2.py, proc3.cpp, net1.py, net2.cpp, net3.py, file1.py, file2.cpp, file3.py
+- **docker** contained 9 of 15 attacks.
+  - not contained: cpu1.py, cpu2.cpp, cpu3.py, proc1.py, proc2.py, proc3.cpp
+- **ours** contained 15 of 15 attacks.
 
 Stability: the table was identical in all 3 runs.
 
-TODO (write by hand): one honest paragraph. Say which attacks Docker or our box missed and why. Do not hide a failure.
+See docs/attack-table-notes.md for the honest reading.
